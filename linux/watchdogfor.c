@@ -37,6 +37,18 @@ void isr2(int v)
 int main()
 {
 	int i,sec;
+	struct sigaction alnew,chldnew;
+	alnew.sa_handler=isr;
+	alnew.sa_flags=0;
+	sigfillset(&alnew.sa_mask);
+
+	chldnew.sa_handler=isr2;
+	chldnew.sa_flags=SA_NOCLDWAIT;
+	sigfillset(&chldnew.sa_mask);
+
+	sigaction(SIGALRM,&alnew,NULL);
+	sigaction(SIGCHLD,&chldnew,NULL);
+
 	for(i=0;i<3;i++)
 	{
 		if((arr[i]=fork())==0)
@@ -44,27 +56,15 @@ int main()
 			srand(getpid());
 			sec = rand()%15+1;
 			printf("child:%d sec:%d\n",i+1,sec);
-			sleep(1);
+			sleep(sec);
 			exit(0);
 		}
 		else
 		{
-			struct sigaction alnew,chldnew;
-			
-			alnew.sa_handler=isr;
-			alnew.sa_flags=0;
-			sigfillset(&alnew.sa_mask);
-			
-
-			chldnew.sa_handler=isr2;
-			chldnew.sa_flags=SA_NOCLDWAIT;
-			sigfillset(&chldnew.sa_mask);
-			
-			sigaction(SIGALRM,&alnew,NULL);
-			sigaction(SIGCHLD,&chldnew,NULL);
-
-			alarm(1);
+			if(i==0)
+				alarm(1);
 		}
 	}
 	while(1);
+
 }	

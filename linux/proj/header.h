@@ -7,5 +7,9 @@
 #include<signal.h>
 #include<dirent.h>
 #include<string.h>
-#include<sys/stat.h>
+#include<pwd.h>
+#include<grp.h>
 #include<time.h>
+
+#include"argumentInfo.h"
+#include"extractFlagInfo.h"
